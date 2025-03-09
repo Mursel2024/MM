@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Su Sərfiyyatı Kalkulyatoru</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            margin: 0;
+            height: 100vh;
+        }
+    
+        .container {
+            max-width: 1000px; /* Genişliyi artırdım */
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* İki sütun */
+            gap: 20px; /* Sütunlar arası boşluq */
+        }
+    
+        h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            grid-column: span 2; /* Başlıq iki sütunu əhatə edir */
+        }
+    
+        .calculator {
+            background-color: #f9f9f9;
+            padding: 15px; /* Padding-i azaltdım */
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        label {
+            font-size: 14px; /* Font ölçüsünü kiçildim */
+            color: #333;
+            margin-top: 8px; /* Margin-i azaltdım */
+            text-align: left;
+            display: block;
+        }
+    
+        input, select, button {
+            width: 100%;
+            padding: 8px; /* Padding-i azaltdım */
+            margin: 8px 0; /* Margin-i azaltdım */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px; /* Font ölçüsünü kiçildim */
+            box-sizing: border-box;
+        }
+    
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            padding: 10px; /* Button üçün padding */
+        }
+    
+        button:hover {
+            background-color: #218838;
+        }
+    
+        #result {
+            font-size: 16px; /* Font ölçüsünü kiçildim */
+            font-weight: bold;
+            margin-top: 10px; /* Margin-i azaltdım */
+            color: #333;
+        }
+    
+        .statistical-info {
+            font-size: 14px; /* Font ölçüsünü kiçildim */
+            color: #333;
+            margin-top: 15px; /* Margin-i azaltdım */
+        }
+    
+        .statistical-info p {
+            margin: 5px 0;
+            font-weight: normal;
+        }
+    
+        #dripSystem {
+            background-color: #f7f7f7;
+            padding: 10px; /* Padding-i azaltdım */
+            border-radius: 8px;
+            margin-top: 15px; /* Margin-i azaltdım */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        #dripSystem label {
+            font-size: 14px;
+            color: #555;
+        }
+    
+        #dripSystem input, #dripSystem select {
+            width: calc(100% - 24px);
+            padding: 8px; /* Padding-i azaltdım */
+        }
+    
+        h4 {
+            color: #333;
+            font-size: 16px; /* Font ölçüsünü kiçildim */
+            margin-top: 10px; /* Margin-i azaltdım */
+        }
+    
+        .chart-container {
+            background-color: #f9f9f9;
+            padding: 15px; /* Padding-i azaltdım */
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        @media screen and (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr; /* Mobil cihazlarda bir sütun */
+            }
+    
+            h2 {
+                grid-column: span 1; /* Başlıq bir sütunu əhatə edir */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Su Sərfiyyatı Kalkulyatoru</h2>
+        
+        <!-- Kalkulyator -->
+        <div class="calculator">
+            <!-- Sahə ölçüsü -->
+            <label for="area">Sahənin Ölçüsü (m²):</label>
+            <input type="number" id="area" placeholder="Sahə ölçüsünü daxil edin" min="1" oninput="calculateWaterUsage()">
+            
+            <!-- Bitki növü -->
+            <label for="plant">Bitki Növü:</label>
+            <select id="plant" onchange="calculateWaterUsage()">
+                <option value="5">Sebzə (5 L/m²)</option>
+                <option value="8">Meyvə Ağacı (8 L/m²)</option>
+                <option value="12">Taxıl (12 L/m²)</option>
+            </select>
+            
+            <!-- Torpaq tipi -->
+            <label for="soil">Torpaq Tipi:</label>
+            <select id="soil" onchange="calculateWaterUsage()">
+                <option value="1">Normal</option>
+                <option value="1.2">Qumlu (+20% su)</option>
+                <option value="0.8">Gilli (-20% su)</option>
+            </select>
+            
+            <!-- Suvarma metodu -->
+            <label for="irrigation">Suvarma Metodu:</label>
+            <select id="irrigation" onchange="toggleDripSystem(); calculateWaterUsage()">
+                <option value="normal">Adi Suvarma</option>
+                <option value="drip">Damcı Sulama</option>
+            </select>
+            
+            <div id="dripSystem" style="display: none;">
+                <!-- Damcı sulama əlavə parametrləri -->
+                <label for="dripPoints">Damcı Nöqtələrinin Sayı:</label>
+                <input type="number" id="dripPoints" placeholder="Məsələn: 10" min="1" oninput="calculateWaterUsage()">
+                
+                <label for="flowRate">Axın Sürəti (L/saat):</label>
+                <input type="number" id="flowRate" placeholder="Məsələn: 2" step="0.1" min="0.1" oninput="calculateWaterUsage()">
+                
+                <label for="irrigationTime">Suvarma Müddəti (saat):</label>
+                <input type="number" id="irrigationTime" placeholder="Məsələn: 3" min="1" oninput="calculateWaterUsage()">
+            </div>
+            
+            <!-- Nəticə -->
+            <h3 id="result"></h3>
+
+            <!-- Suvarma statistikası -->
+            <div id="statisticalInfo" class="statistical-info" style="display: none;">
+                <h4>Suvarma Statistikasını Görün:</h4>
+                <p id="dailyWater"></p>
+                <p id="monthlyWater"></p>
+            </div>
+        </div>
+
+        <!-- Qrafik üçün konteyner -->
+        <div class="chart-container">
+            <canvas id="waterUsageChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart.js kitabxanası -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let waterUsageChart;
+
+        function toggleDripSystem() {
+            let method = document.getElementById("irrigation").value;
+            document.getElementById("dripSystem").style.display = method === "drip" ? "block" : "none";
+        }
+        
+        function calculateWaterUsage() {
+            let area = parseFloat(document.getElementById("area").value);
+            let plantWater = parseFloat(document.getElementById("plant").value);
+            let soilFactor = parseFloat(document.getElementById("soil").value);
+            let irrigationMethod = document.getElementById("irrigation").value;
+            let waterNeeded;
+            
+            if (isNaN(area) || area <= 0) {
+                document.getElementById("result").innerText = "Xahiş olunur düzgün sahə ölçüsü daxil edin!";
+                return;
+            }
+            
+            if (irrigationMethod === "normal") {
+                waterNeeded = area * plantWater * soilFactor;
+            } else {
+                let dripPoints = parseFloat(document.getElementById("dripPoints").value);
+                let flowRate = parseFloat(document.getElementById("flowRate").value);
+                let irrigationTime = parseFloat(document.getElementById("irrigationTime").value);
+                
+                if (isNaN(dripPoints) || isNaN(flowRate) || isNaN(irrigationTime) || dripPoints <= 0 || flowRate <= 0 || irrigationTime <= 0) {
+                    document.getElementById("result").innerText = "Xahiş olunur damcı sulama üçün düzgün dəyərləri daxil edin!";
+                    return;
+                }
+                
+                waterNeeded = dripPoints * flowRate * irrigationTime;
+            }
+            
+            document.getElementById("result").innerText = `Gündəlik lazım olan su: ${waterNeeded.toFixed(2)} litr`;
+
+            // Statistika əlavə etmək
+            document.getElementById("statisticalInfo").style.display = "block";
+            let monthlyWater = waterNeeded * 30; // Aylıq su sərfiyyatını hesablayırıq (30 gün)
+            document.getElementById("dailyWater").innerText = `Gündəlik su sərfiyyatı: ${waterNeeded.toFixed(2)} litr`;
+            document.getElementById("monthlyWater").innerText = `Aylıq su sərfiyyatı: ${monthlyWater.toFixed(2)} litr`;
+
+            // Qrafiki yenilə
+            updateChart(waterNeeded, monthlyWater);
+        }
+
+        function updateChart(dailyWater, monthlyWater) {
+            const ctx = document.getElementById('waterUsageChart').getContext('2d');
+
+            // Əgər qrafik artıq varsa, onu sil
+            if (waterUsageChart) {
+                waterUsageChart.destroy();
+            }
+
+            // Yeni qrafik yarat
+            waterUsageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gündəlik Su Sərfiyyatı', 'Aylıq Su Sərfiyyatı'],
+                    datasets: [{
+                        label: 'Su Sərfiyyatı (Litr)',
+                        data: [dailyWater, monthlyWater],
+                        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
